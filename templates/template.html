@@ -1,0 +1,184 @@
+<#macro content>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Chancecoin is a coin for betting on dice in a decentralized casino.">
+
+	<title>Chancecoin<#if title??> - ${title}</#if></title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/bootstrap-select.min.css">
+	<link rel="stylesheet" href="/css/cards.css">
+	<link rel="stylesheet" href="/css/cards-ie.css">
+	<link rel="stylesheet" href="/css/cards-ie9.css">
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+	<script type="text/javascript" src="/js/jsapi.js"></script>
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<#if title?? && title=="Technical">
+	<script type="text/javascript" src="/js/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+	</#if>
+	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+	<#if title?? && title=="Casino">
+	<script type="text/javascript" src="/js/highcharts.js"></script>
+	</#if>
+	<script type="text/javascript" src="/js/exporting.js"></script>
+	<script type="text/javascript" src="/js/ajax.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-select.min.js"></script>
+</head>
+<body>
+	<!-- 1CHACHAGuuxTr8Yo9b9SQmUGLg9X5iSeKX -->
+	<div class="playingCards fourColours rotateHand simpleCards">
+	<nav class="navbar navbar-default" role="navigation">
+	  <div class="container-fluid">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a class="navbar-brand logo" href="/">Chancecoin</a>
+	    </div>
+
+	    <!-- Collect the nav links, forms, and other content for toggling -->
+	    <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+	      <ul class="nav navbar-nav">
+					<li class="dropdown<#if title?? && title=="Casino"> active</#if>">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Casino <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="/casino">Play</a></li>
+							<li><a href="/casino_stats">Stats</a></li>
+						</ul>
+					</li>
+					<li class="dropdown<#if title?? && title=="Exchange"> active</#if>">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Exchange <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="/exchange">Decentralized exchange</a></li>
+							<#if read_only??>
+							<li><a href="https://poloniex.com/exchange/btc_cha">Centralized exchange &mdash; Poloniex</a></li>
+							</#if>
+						</ul>
+					</li>
+					<li <#if title?? && title=="Wallet">class="active"</#if>><a href="/wallet">Wallet</a></li>
+					<li <#if title?? && title=="Chat">class="active"</#if>><a href="/chat">Chat</a></li>
+					<#if read_only??>
+					<li <#if title?? && title=="Participate">class="active"</#if>><a href="/participate">Participate</a></li>
+					<li <#if title?? && title=="Faucet">class="active"</#if>><a href="/faucet">Faucet</a></li>
+					<li <#if title?? && title=="Technical">class="active"</#if>><a href="/technical">Technical</a></li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="https://bitcointalk.org/index.php?topic=528023.0">Bitcointalk</a></li>
+							<li><a href="http://twitter.com/chancecoin">Twitter</a></li>
+							<li><a href="http://reddit.com/r/chancecoin">Subreddit</a></li>
+							<li><a href="https://github.com/chancecoin/chancecoinj">GitHub</a></li>
+						</ul>
+					</li>
+					</#if>
+	      </ul>
+	      <ul class="nav navbar-nav navbar-right">
+					<#if price_BTC?? && price_CHA?? && supply??>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">1 CHA = $${(price_BTC*price_CHA)?string(",##0.00")} <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="#">CHA Supply <span class="badge">${supply?string(",##0.00")}</span></a></li>
+							<li><a href="#">BTC price <span class="badge">$${price_BTC?string(",##0.00")}</span></a></li>
+							<li><a href="#">CHA price <span class="badge">${price_CHA?string(",##0.0000")} BTC</span></a></li>
+							<li><a href="#">Market cap <span class="badge">$${(supply*price_BTC*price_CHA)?string(",##0.00")}</span></a></li>
+						</ul>
+					</li>
+					</#if>
+					<#if !read_only?? && addresses??>
+	        <li class="dropdown">
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">${address?substring(0,6)}... <b class="caret"></b></a>
+	          <ul class="dropdown-menu">
+								<#list addresses as addr>
+									<li><a href="?address=${addr["address"]}"><#if addr["address"]==address><strong>${addr["address"]}</strong><#else>${addr["address"]}</#if> <span class="badge">${addr["balance_CHA"]} CHA</span></a></li>
+								</#list>
+	          </ul>
+	        </li>
+					</#if>
+					<#if blocksBTC?? && blocksCHA?? && version??>
+					<li class="dropdown">
+						<#if parsing??>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">${parsing} / ${blocksBTC} <b class="caret"></b></a>
+						<#else>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">${blocksCHA} / ${blocksBTC} <b class="caret"></b></a>
+						</#if>
+						<ul class="dropdown-menu">
+							<#if parsing??>
+							<li><a href="#">CHA blocks <span class="badge">${parsing}</span></a></li>
+							<#else>
+							<li><a href="#">CHA blocks <span class="badge">${blocksCHA}</span></a></li>
+							</#if>
+							<li><a href="#">BTC blocks <span class="badge">${blocksBTC}</span></a></li>
+							<li><a href="#">Version <span class="badge">${version}</span></a></li>
+							<#if !parsing?? && !read_only??>
+							<li><a href="/?reparse">Reparse transactions</a></li>
+							<li><a href="/?redownload">Redownload blockchain</a></li>
+							</#if>
+						</ul>
+					</li>
+					</#if>
+	      </ul>
+	    </div>
+	  </div>
+	</nav>
+
+	<div class="container-fluid content">
+		<div id="ajax_message" class="row section messages" style="display:none">
+			<div id="ajax_wait_message" class="alert alert-info" style="display:none"></div>
+			<div id="ajax_result_message" class="alert alert-info" style="display:none"></div>
+		</div>
+		<#if (read_only?? && title?? && (title=="Casino" || title=="Exchange" || title=="Wallet")) || info?? || error?? || success?? || warning?? || (!read_only?? && (parsing?? || ((blocksCHA?? && blocksBTC??) && (blocksCHA!=blocksBTC || blocksBTC=0 || blocksCHA=0)))) || (version_major?? && version_minor?? && min_version_major?? && min_version_minor?? && (version_major?number<min_version_major?number || (version_major?number==min_version_major?number && version_minor?number<min_version_minor?number)))>
+		<div class="row section messages">
+			<#if info??>
+			<div class="alert alert-info">${info}</div>
+			</#if>
+			<#if error??>
+			<div class="alert alert-danger">${error}</div>
+			</#if>
+			<#if success??>
+			<div class="alert alert-success">${success}</div>
+			</#if>
+			<#if warning??>
+			<div class="alert alert-warning">${warning}</div>
+			</#if>
+			<#if version_major?? && version_minor?? && min_version_major?? && min_version_minor?? && (version_major?number<min_version_major?number || (version_major?number==min_version_major?number && version_minor?number<min_version_minor?number))>
+			<div class="alert alert-danger">You must update to the latest version of Chancecoin. Your version is out of date.</div>
+			</#if>
+			<#if read_only?? && title?? && (title=="Casino" || title=="Exchange" || title=="Wallet")>
+			<div class="alert alert-warning">This is a read-only version of Chancecoin. To use Chancecoin, download the software <a href="/participate">here</a>.</div>
+			</#if>
+			<#if (!read_only?? && (parsing?? || ((blocksCHA?? && blocksBTC??) && (blocksCHA!=blocksBTC || blocksBTC=0 || blocksCHA=0))))>
+			<div class="alert alert-warning">Chancecoin is parsing transactions. You can still use the software, but the information you see will be out of date.</div>
+			</#if>
+		</div>
+		</#if>
+
+		<#nested/>
+	</div>
+
+	<div class="container-fluid footer">
+	Chancecoin &copy; 2014. Released under the <a href="http://opensource.org/licenses/mit-license.php">MIT License</a>.
+	</div>
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-49712885-1', 'chancecoin.com');
+	  ga('send', 'pageview');
+
+	</script>
+
+</div>
+</body>
+</html>
+</#macro>

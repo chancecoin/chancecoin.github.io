@@ -1,0 +1,310 @@
+<#import "template.html" as template>
+<@template.content>
+<#import "cards.tpl" as cards>
+
+<div id="num_unresolved_bets" style="display:none">${num_unresolved_bets}</div>
+
+<#if read_only??>
+<div class="row section">
+		<div class="page-header centered">
+		  <h1>Chancecoin <small>a coin for betting in a decentralized casino</small></h1>
+		</div>
+		<div class="col-xs-6 segment">
+			<div class="list-group">
+			  <div class="list-group-item">
+			    <h3 class="list-group-item-heading">Coin and casino</h3>
+			    <p class="list-group-item-text">Chancecoin is a coin and a casino.</p>
+			  </div>
+				<div class="list-group-item">
+					<h3 class="list-group-item-heading">Fast bets</h3>
+					<p class="list-group-item-text">When you bet, the result takes only 5 seconds.</p>
+				</div>
+				<div class="list-group-item">
+					<h3 class="list-group-item-heading">Low fees</h3>
+					<p class="list-group-item-text">The fee for a bet is only 0.0000456 BTC, or approximately $0.025.</p>
+				</div>
+				<div class="list-group-item">
+					<h3 class="list-group-item-heading">Great games</h3>
+					<p class="list-group-item-text">The casino features classic dice betting and poker.</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-6 segment">
+			<div class="list-group">
+				<div class="list-group-item">
+					<h3 class="list-group-item-heading">Invest</h3>
+					<p class="list-group-item-text">Every Chancecoin owner is automatically invested in the house.</p>
+				</div>
+				<div class="list-group-item">
+					<h3 class="list-group-item-heading">Decentralized</h3>
+					<p class="list-group-item-text">There is no central point of failure. Nobody can shut it down.</p>
+				</div>
+				<div class="list-group-item">
+					<h3 class="list-group-item-heading">Bitcoin blockchain</h3>
+					<p class="list-group-item-text">Transactions are stored in the Bitcoin blockchain.</p>
+				</div>
+				<div class="list-group-item">
+					<h3 class="list-group-item-heading">Download</h3>
+					<p class="list-group-item-text"><a href="/participate">Download</a> the decentralized casino, decentralized exchange, and wallet.</p>
+				</div>
+			</div>
+		</div>
+		<p style="text-align: center;"><a class="btn btn-primary btn-lg" role="button" href="http://chancecoin.com/downloads/Chancecoin-${ version }.zip">Download</a></p>
+</div>
+</#if>
+
+<div class="row section">
+		<ul id="tabs" class="nav nav-tabs" data-tabs="tabs" style="margin-top: 2em;">
+				<li class="active"><a href="#dice" data-toggle="tab">Dice</a></li>
+				<li><a href="#poker" data-toggle="tab">Poker</a></li>
+		</ul>
+
+		<div id="my-tab-content1" class="tab-content">
+				<div class="tab-pane active" id="dice">
+						<form id="dice1" action="/casino" class="form-inline" method="post">
+
+								<input type="hidden" name="form" value="bet_dice">
+								<input type="hidden" name="source" value="${address}">
+
+								<div class="form-group">
+									<img src="/images/dice.png" class="casino-icon" />
+								</div>
+
+								<div class="form-group">
+									<div class="input-group">
+										<span class="input-group-addon">#</span>
+										<input type="text" placeholder="bet size" name="bet">
+									</div>
+								</div>
+								<input type="hidden" name="resolution" value="instant">
+								<!--
+								<div class="form-group">
+									<div class="input-group">
+										<select name="resolution">
+											<option value="instant" selected="selected">Instant</option>
+											<option value="regular">Regular</option>
+										</select>
+									</div>
+								</div>
+								-->
+								<div class="form-group">
+									<div class="input-group">
+										<select name="asset">
+											<option value="BTC">BTC</option>
+											<option value="CHA"<#if balanceCHA gt 0> selected="selected"</#if>>CHA</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="input-group">
+										<span class="input-group-addon">%</span>
+										<input type="text" placeholder="chance to win" name="chance" onchange="document.getElementsByName('payout')[0].value=100/parseFloat(document.getElementsByName('chance')[0].value)*(${1-house_edge});">
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="input-group">
+										<span class="input-group-addon">X</span>
+										<input type="text" placeholder="payout" name="payout" onchange="document.getElementsByName('chance')[0].value=100/(parseFloat(document.getElementsByName('payout')[0].value)/(${1-house_edge}));">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<div class="input-group">
+										<span class="input-group-btn">
+											<button class="btn btn-default" onclick="processBet('dice1'); return false;" <#if !own?? || read_only??>disabled="disabled"</#if>>Roll dice</button>
+										</span>
+									</div>
+								</div>
+
+						</form>
+				</div>
+				<div class="tab-pane" id="poker">
+						<#if poker_hand??>
+						<form id="poker1" action="/casino" class="form-inline" method="post">
+
+								<input type="hidden" name="form" value="bet_poker">
+								<input type="hidden" name="source" value="${address}">
+
+								<div class="form-group">
+									<img src="/images/poker.png" class="casino-icon" />
+								</div>
+
+								<div class="form-group">
+									<div class="input-group">
+										<span class="input-group-addon">#</span>
+										<input type="text" placeholder="bet size" name="bet">
+									</div>
+								</div>
+								<input type="hidden" name="resolution" value="instant">
+								<!--
+								<div class="form-group">
+									<div class="input-group">
+										<select name="resolution">
+											<option value="instant" selected="selected">Instant</option>
+											<option value="regular">Regular</option>
+										</select>
+									</div>
+								</div>
+								-->
+								<div class="form-group">
+									<div class="input-group">
+										<select name="asset">
+											<option value="BTC">BTC</option>
+											<option value="CHA"<#if balanceCHA gt 0> selected="selected"</#if>>CHA</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="input-group">
+										<span class="input-group-btn">
+											<button class="btn btn-default" onclick="processBet('poker1'); return false;" <#if !own?? || read_only??>disabled="disabled"</#if>>Bet</button>
+										</span>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="input-group">
+										<span class="input-group-btn">
+											<button class="btn btn-default" onclick="window.location.reload(true); return false;">Fold</button>
+										</span>
+									</div>
+								</div>
+
+								<div class="form-group" style="clear: both; display: block;">
+								</div>
+
+								<#list poker_hand as card>
+								<div class="form-group">
+									<div class="input-group">
+										<#if card_index=0>
+										<span class="help-block">You</span>
+										<#elseif card_index=2>
+										<span class="help-block">Board</span>
+										<#elseif card_index=7>
+										<span class="help-block">Opponent</span>
+										<#else>
+										<span class="help-block">&nbsp;</span>
+										</#if>
+										<#if card="??">
+											<input type="hidden" name="card${card_index+1}" value="??">
+											<div class="card back">*</div>
+										<#else>
+											<input type="hidden" name="card${card_index+1}" value="${card}">
+											<div class="card rank-${cards.getCardRank(card)} ${cards.getCardSuit(card)}">
+													<span class="rank">${cards.getCardRank(card)}</span>
+													<span class="suit">&${cards.getCardSuit(card)};</span>
+											</div>
+										</#if>
+									</div>
+								</div>
+								<#if card_index=1 || card_index=6 || card_index=8>
+								<div class="form-group" style="clear: both; width: 4em;">
+								</div>
+								</#if>
+								</#list>
+								<p>Chance of winning: ${poker_chance}%</p>
+						</form>
+						</#if>
+				</div>
+		</div>
+</div>
+
+<div class="row section">
+		<h2>Recent <a href="/casino">bets</a></h2>
+		<table class="table table-striped">
+				<thead>
+						<tr>
+								<th>Source address</th>
+								<th>Time</th>
+								<th>Bet size</th>
+								<th>Chance to win / payout multiplier</th>
+								<th>Result</th>
+								<th>Profit</th>
+						</tr>
+				</thead>
+
+				<tbody>
+					<#if my_bets_pending??>
+					<#list my_bets_pending as bet>
+							<tr>
+									<td><a href="?address=${bet["source"]}">${bet["source"]?substring(0,6)}...</a></td>
+									<td>Pending</td>
+									<td><#if (bet["bet"]>0)>${bet["bet"]} CHA<#if (bet["betBTC"]>0)> (${bet["betBTC"]?string(",##0.00000")} BTC)</#if><#else>${bet["betBTC"]?string(",##0.00000")} BTC</#if></td>
+									<td>${bet["chance"]}% / ${bet["payout"]}X</td>
+
+									<#if bet["cards"]??>
+									<td>
+									<#list bet["cards"]?split(" ") as card>
+									<#if card_index=0>
+									<div style="float: left; padding-top: 1.25em; padding-right: 2.5em;">Player</div>
+									</#if>
+									<#if card_index=7>
+									<div style="float: left; padding-top: 1.25em; padding-right: 1em;">Opponent</div>
+									</#if>
+									<#if card="??">
+									<div class="card back">*</div>
+									<#else>
+									<div class="card rank-${cards.getCardRank(card)} ${cards.getCardSuit(card)}">
+											<span class="rank">${cards.getCardRank(card)}</span>
+											<span class="suit">&${cards.getCardSuit(card)};</span>
+									</div>
+									</#if>
+									<#if card_index=1 || card_index=6>
+									<div style="clear: both;"></div>
+									</#if>
+									</#list>
+									<#if bet["cards_result"]??>
+									<p>${bet["cards_result"]}</p>
+									</#if>
+									</td>
+									<#else>
+									<td><img src="/images/dice.png" style="height: 25px; display: inline;" /> <#if bet["resolved"]??>${bet["roll"]}<#else>?</#if></td>
+									</#if>
+
+									<td><#if bet["resolved"]?? && bet["resolved"]="true">${bet["profit"]} CHA<#else><img src="/images/ajax-loader.gif" /></#if></td>
+							</tr>
+					</#list>
+					</#if>
+					<#list bets as bet>
+							<tr>
+									<td><a href="/wallet?address=${bet["source"]}">${bet["source"]?substring(0,6)}...</a></td>
+									<td>${bet["block_time"]}</td>
+									<td>${bet["bet"]} CHA</td>
+									<td>${bet["chance"]}% / ${bet["payout"]}X</td>
+
+									<#if bet["cards"]??>
+									<td>
+									<#list bet["cards"]?split(" ") as card>
+									<#if card_index=0>
+									<div style="float: left; padding-top: 1.25em; padding-right: 2.5em;">Player</div>
+									</#if>
+									<#if card_index=7>
+									<div style="float: left; padding-top: 1.25em; padding-right: 1em;">Opponent</div>
+									</#if>
+									<#if card="??">
+									<div class="card back">*</div>
+									<#else>
+									<div class="card rank-${cards.getCardRank(card)} ${cards.getCardSuit(card)}">
+									    <span class="rank">${cards.getCardRank(card)}</span>
+									    <span class="suit">&${cards.getCardSuit(card)};</span>
+									</div>
+									</#if>
+									<#if card_index=1 || card_index=6>
+									<div style="clear: both;"></div>
+									</#if>
+									</#list>
+									<#if bet["cards_result"]??>
+									<p>${bet["cards_result"]}</p>
+									</#if>
+									</td>
+									<#else>
+									<td><img src="/images/dice.png" style="height: 25px; display: inline;" /> <#if bet["resolved"]??>${bet["roll"]}<#else>?</#if></td>
+									</#if>
+
+									<td><#if bet["resolved"]?? && bet["resolved"]="true">${bet["profit"]} CHA<#else><img src="/images/ajax-loader.gif" /></#if></td>
+							</tr>
+					</#list>
+				</tbody>
+		</table>
+</div>
+
+</@template.content>
