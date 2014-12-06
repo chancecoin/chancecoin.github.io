@@ -1,35 +1,13 @@
-<div style="display: block; width: 600px; height: 400px; margin: 20px;">
-<div id="hide_chat" onclick="document.getElementById('chat_open').innerHTML='0'; document.getElementById('CHATBUTTON_CHATBOX').style.display='none'; document.getElementById('hide_chat').style.display='none'; document.getElementById('show_chat').style.display='block'; updateChatStatus();"></div>
-<p id="show_chat" style="display: none;"><a href="#" onclick="document.getElementById('chat_open').innerHTML='1'; document.getElementById('CHATBUTTON_CHATBOX').style.display='block'; document.getElementById('show_chat').style.display='none'; document.getElementById('hide_chat').style.display='block'; updateChatStatus();">Show chat</a></p>
-<iframe name="CHATBUTTON_CHATBOX" id="CHATBUTTON_CHATBOX" src="https://www.chatbutton.com/chatroom/18347632/" width="600" height="400" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" style="display:none"><a href="https://www.chatbutton.com/chatroom/18347632/">Enter Chat Room</a></iframe>
-<script type="text/javascript">
-CHBT_channel="18347632";
-CHBT_profanityfilter="0";
-//CHBT_position="top-left";
-</script>
-<script type="text/javascript" src="https://www.chatbutton.com/c.js">
-</script>
-</div>
-<div id="chat_open" style="display:none">${chat_open}</div>
-<script type="text/javascript">
-  window.onload = function() {
-    if (document.getElementById('chat_open').innerHTML == 0) {
-      document.getElementById('CHATBUTTON_CHATBOX').style.display='none';
-      document.getElementById('hide_chat').style.display='none';
-      document.getElementById('show_chat').style.display='block';
-    } else {
-      document.getElementById('CHATBUTTON_CHATBOX').style.display='block';
-      document.getElementById('hide_chat').style.display='block';
-      document.getElementById('show_chat').style.display='none';
-    }
-  }
-
-  function updateChatStatus() {
-    $.ajax({
-      url: "/chat_status_update?chat_open="+$('#chat_open').html(),
-      type: 'GET',
-      success: function(data) {
-      }
-    });
-  }
-</script>
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+codebase="http://active.macromedia.com/flash4/cabs/swflash.cab#version=4,0,0,0"
+id="name" width="468" height="60">
+<param name="movie" value="http://www.everywherechat.com/everywherechat.swf?defaultRoom=Chancecoin&roomList=true&fontSize=12&width=600&height=500&theme=classic">
+<param name="quality" value="high">
+<param name="wmode" value="transparent">
+<embed name="name" src="http://www.everywherechat.com/everywherechat.swf?defaultRoom=Chancecoin&roomList=true&fontSize=12&width=600&height=500&theme=classic"
+quality="high" wmode="transparent" width="600" height="500"
+type="application/x-shockwave-flash"
+pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?
+P1_Prod_Version=ShockwaveFlash">
+</embed>
+</object>
