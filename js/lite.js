@@ -24,6 +24,7 @@ var CACHE_decodeChancecoinTx = {};
 var CACHE_getBTCPrice = null;
 var CACHE_getCHAPrice = null;
 var CACHE_getBTCBlockHeight = {};
+var CACHE_getBTCBlockHash = null;
 var HOME = "https://chancecoin.github.io";
 var UPDATING = false;
 var BALANCES = null;
@@ -50,8 +51,9 @@ $(document).ready(function() {
   $(document.body).on("click", "a[data-toggle]", function(event) {
     location.hash = this.getAttribute("href");
   });
-  setInterval(function(){update();}, 5000);
+  update();
   initialize();
+  setInterval(function(){update();}, 5000);
 });
 
 function update() {
@@ -760,10 +762,16 @@ function chanceOfWinning(cards) {
 
 function resolveBet(chancecoinTxDecoded) {
   var betObject = chancecoinTxDecoded["details"];
+
+  var chaSupply = CHASupplyForBetting();
+  if (!(chaSupply > 0)) {
+    return chancecoinTxDecoded;
+  }
+
   var earlierBetIsUnresolved = false; //TODO
   if (earlierBetIsUnresolved) {
     //if an earlier bet by the same address is still unresolved, don't resolve this one yet
-    return betObject;
+    return chancecoinTxDecoded;
   }
 
   var couldWin = 0; //TODO: the total amount of CHA that could be won in this block
@@ -775,7 +783,7 @@ function resolveBet(chancecoinTxDecoded) {
 
   if (couldWin > 20000) {
     //TODO: must use lottery numbers to resolve bet
-    return betObject;
+    return chancecoinTxDecoded;
   } else {
     rollA = 0.0;
   }
@@ -811,7 +819,6 @@ function resolveBet(chancecoinTxDecoded) {
   if (roll != null) {
     betObject["resolved"] = "true";
     var bet = betObject["bet"];
-    var chaSupply = CHASupplyForBetting();
     var chance = betObject["chance"];
     var payout = betObject["payout"];
     getBalances();
@@ -943,31 +950,43 @@ function getCardSuit(card) {
 }
 
 function createCookie(name,value,days) {
+  if (localStorage) {
+    localStorage.setItem(name, value);
+  } else {
     if (days) {
-        var date = new Date();
-        date.setTime(date.getTime()+(days*24*60*60*1000));
-        var expires = "; expires="+date.toGMTString();
+      var date = new Date();
+      date.setTime(date.getTime()+(days*24*60*60*1000));
+      var expires = "; expires="+date.toGMTString();
     }
     else var expires = "";
     document.cookie = name+"="+value+expires+"; path=/";
+  }
 }
 function readCookie(name) {
+  if (localStorage) {
+    return localStorage.getItem(name);
+  } else {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
     for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      var c = ca[i];
+      while (c.charAt(0)==' ') c = c.substring(1,c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
     return null;
+  }
 }
 function eraseCookie(name) {
+  if (localStorage) {
+    localStorage.removeItem(name);
+  } else {
     createCookie(name,"",-1);
+  }
 }
 
 function showError(message) {
-    showMessage(message, "error");
-    //throw error;
+  showMessage(message, "error");
+  //throw error;
 }
 
 function showMessage(message, type) {
@@ -1007,11 +1026,13 @@ function getBTCPrice() {
   } else {
     var url = "http://www.corsproxy.com/blockchain.info/q/24hrprice";
     var price = 0;
-    var data = download(url, true);
-    if (data) {
-      price = data*1;
-    }
-    CACHE_getBTCPrice = price;
+    download(url, true, function(data) {
+      var price = 0;
+      if (data) {
+        price = data*1;
+      }
+      CACHE_getBTCPrice = price;
+    });
     return price;
   }
 }
@@ -1022,11 +1043,13 @@ function getCHAPrice() {
   } else {
     var url = "http://www.corsproxy.com/coinmarketcap.northpole.ro/api/v5/CHA.json";
     var price = 0;
-    var data = download(url, true);
-    if (data) {
-      price = data.price.btc*1;
-    }
-    CACHE_getCHAPrice = price;
+    download(url, true, function(data) {
+      var price = 0;
+      if (data) {
+        price = data.price.btc*1;
+      }
+      CACHE_getCHAPrice = price;
+    });
     return price;
   }
 }
@@ -1037,11 +1060,15 @@ function getCHASupply() {
 
 function getBTCBlockHash() {
   var url = "https://insight.bitpay.com/api/status?q=getLastBlockHash";
-  var blockHash = 0;
-  var data = download(url);
-  if (data) {
-    blockHash = data.lastblockhash;
+  var blockHash = "";
+  if (CACHE_getBTCBlockHash) {
+    blockHash = CACHE_getBTCBlockHash;
   }
+  data = download(url, false, function(data) {
+    if (data) {
+      CACHE_getBTCBlockHash = data.lastblockhash;
+    }
+  });
   return blockHash;
 }
 
@@ -1059,11 +1086,9 @@ function getNewTransactions() {
   var blocks = getBlocks();
   getBalances();
   if (blocks) {
-    blocks = blocks.blocks;
-    blocks.reverse();
     for (i in blocks) {
       var block = blocks[i];
-      if (block.height > BALANCES.height) {
+      if (block.height > BALANCES.height && BALANCES.height>0) {
         var blockHeight = block.height;
         block = getBlock(block.hash);
         if (block) {
@@ -1092,15 +1117,19 @@ function getNewTransactions() {
 function getBlocks() {
   getBalances();
   var url = "http://www.corsproxy.com/blockchain.info/blocks/?format=json";
-  var blocks = null;
-  var data = download(url);
-  if (data) {
-    blocks = data;
-    for (i in blocks.blocks) {
-      var block = blocks.blocks[i];
-      CACHE_getBTCBlockHeight[block.hash] = block.height;
+  var blocks = [];
+  download(url, false, function(data) {
+    if (data) {
+      for (i in data.blocks) {
+        var block = data.blocks[i];
+        CACHE_getBTCBlockHeight[block.hash] = block.height;
+      }
     }
+  });
+  for (hash in CACHE_getBTCBlockHeight) {
+    blocks.push({hash: hash, height: CACHE_getBTCBlockHeight[hash]});
   }
+  blocks.reverse();
   return blocks;
 }
 
@@ -1122,11 +1151,15 @@ function getBTCBlockHeight(hash) {
   } else {
     var url = "https://insight.bitpay.com/api/block/"+hash;
     var blockHeight = 0;
-    var data = download(url);
-    if (data) {
-      blockHeight = data.height;
+    if (hash) {
+      download(url, false, function(data) {
+        var blockHeight = 0;
+        if (data) {
+          blockHeight = data.height;
+        }
+        CACHE_getBTCBlockHeight[hash] = blockHeight;
+      });
     }
-    CACHE_getBTCBlockHeight[hash] = blockHeight;
     return blockHeight;
   }
 }
@@ -1137,10 +1170,10 @@ function getVersion() {
 
 function getCasinoInfo() {
   var address = readCookie("address");
+  var chaSupply = getCHASupply();
   var blockHeightBTC = getBTCBlockHeight();
   var blockHeightCHA = getCHABlockHeight();
   var version = getVersion();
-  var chaSupply = getCHASupply();
   var chaPrice = getCHAPrice();
   var btcPrice = getBTCPrice();
 
@@ -1255,10 +1288,12 @@ function getBalances() {
   } else {
     var balances = {balances: {}, height: 0};
     var url = "https://api.github.com/repos/chancecoin/chancecoinj/contents/balances.txt";
-    var data = download(url);
-    if (data) {
-      balances = JSON.parse(Base64.decode(data.content));
-    }
+    download(url, false, function(data) {
+      if (data) {
+        balances = JSON.parse(Base64.decode(data.content));
+      }
+      BALANCES = balances;
+    });
     BALANCES = balances;
     return balances;
   }
@@ -1280,21 +1315,34 @@ function getBalance(address, asset) {
   return balance;
 }
 
-function download(url, cache) {
+function download(url, cache, callback) {
   var result = null;
   if (!cache) {
     cache = false;
   }
+  var async = false;
+  if (!callback) {
+    $.ajax({
+      url: url,
+      cache: cache,
+      async: false
+    }).done(function( data ) {
+      result = data;
+    }).fail( function(xhr, textStatus, errorThrown) {
+      LOG.push("Failed to download "+url);
+    });
+  } else {
+    $.ajax({
+      url: url,
+      cache: cache,
+      async: true
+    }).done(
+      callback
+    ).fail( function(xhr, textStatus, errorThrown) {
+      LOG.push("Failed to download "+url);
+    });
+  }
   //console.log("Downloading "+url);
-  $.ajax({
-    url: url,
-    cache: cache,
-    async: false
-  }).done(function( data ) {
-    result = data;
-  }).fail( function(xhr, textStatus, errorThrown) {
-    LOG.push("Failed to download "+url);
-  });
   return result;
 }
 
