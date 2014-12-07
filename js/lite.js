@@ -421,7 +421,7 @@ function processBet(formName) {
       }
       enableForm(formName);
       clearCaches();
-      setTimeout(function(){update();}, 1000);
+      update();
     }
     if (formName=="poker" && bet && resolution && asset && address && card1 && card2 && card3 && card4 && card5 && card6 && card7 && card8 && card9) {
       disableForm(formName);
@@ -432,7 +432,7 @@ function processBet(formName) {
       }
       enableForm(formName);
       clearCaches();
-      setTimeout(function(){update();}, 1000);
+      update();
     }
 }
 function createTransaction(source, destinations, btcAmounts, fee, data, useUnspentTxHash, useUnspentVout) {
