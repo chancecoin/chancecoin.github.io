@@ -6,24 +6,24 @@
   <h2>Burn information</h2>
   <ul>
     <li><strong>Burn status</strong>: COMPLETE</li>
-    <li><strong>Coins burned</strong>: ${ burned_CHA } CHA (${ burned_BTC } BTC)</li>
-    <li><strong>Burn period</strong>: Bitcoin blocks ${ start_block } to ${ end_block }</li>
-    <li><strong>Coins burned in first block</strong>: ${ multiplier_initial } CHA per 1 BTC</li>
-    <li><strong>Coins burned in last block</strong>: ${ multiplier } CHA per 1 BTC (coins per block scaled linearly in between these blocks)</li>
-    <li><strong>BTC burn address</strong>: <a href="http://blockchain.info/address/${ burn_address }">${ burn_address }</a></li>
-    <li><strong>Maximum coins allowed to be burned</strong>: ${ max_burn } CHA</li>
+    <li><strong>Coins burned</strong>: 514,887.848 CHA (480.194 BTC)</li>
+    <li><strong>Burn period</strong>: Bitcoin blocks 291,860 to 298,340</li>
+    <li><strong>Coins burned in first block</strong>: 1,500 CHA per 1 BTC</li>
+    <li><strong>Coins burned in last block</strong>: 1,000 CHA per 1 BTC (coins per block scaled linearly in between these blocks)</li>
+    <li><strong>BTC burn address</strong>: <a href="http://blockchain.info/address/1ChancecoinXXXXXXXXXXXXXXXXXZELUFD">1ChancecoinXXXXXXXXXXXXXXXXXZELUFD</a></li>
+    <li><strong>Maximum coins allowed to be burned</strong>: 1,000,000 CHA</li>
     <li><strong>Maximum coins burned per address</strong>: unlimited</li>
   </ul>
 
   <h2>Casino information</h2>
   <ul>
-    <li><strong>House edge</strong>: ${ house_edge*100 }%</li>
-    <li><strong>Maximum win</strong>: ${ max_profit*100 }% of bankroll</li>
+    <li><strong>House edge</strong>: 1%</li>
+    <li><strong>Maximum win</strong>: 1% of bankroll</li>
   </ul>
 
   <h2>Betting</h2>
-    <p>Generally speaking, when you bet, you specify a bet size, a chance of winning, and a payout. The chance of winning and the payout must correspond. For example, if there were no house edge, a `50%` chance of winning would correspond to a `2`-to-`1` payout (`2x`). Because the house edge is `${ house_edge*100 }%`, this payout is adjusted to `${ 1/0.5*(1-house_edge) }x` (this is `1/0.5*(1-${ house_edge }`).</p>
-    <p>Specifically, in Chancecoin, a bet is comprised of a bet amount (`b`), a chance of winning (`1/p`), and an edge-adjusted payout (`p*(1-e)`). The house edge (`e`) is `${ house_edge }` (`${ house_edge*100 }%`). The protocol enforces that the edge-adjusted payout and the chance of winning correspond exactly as described.</p>
+    <p>Generally speaking, when you bet, you specify a bet size, a chance of winning, and a payout. The chance of winning and the payout must correspond. For example, if there were no house edge, a `50%` chance of winning would correspond to a `2`-to-`1` payout (`2x`). Because the house edge is `1%`, this payout is adjusted to `1.98x` (this is `1/0.5*(1-0.01`).</p>
+    <p>Specifically, in Chancecoin, a bet is comprised of a bet amount (`b`), a chance of winning (`1/p`), and an edge-adjusted payout (`p*(1-e)`). The house edge (`e`) is `0.01` (`1%`). The protocol enforces that the edge-adjusted payout and the chance of winning correspond exactly as described.</p>
   <h2>Randomness</h2>
     <p>Chancecoin uses <a href="http://nylottery.ny.gov/wps/portal?PC_7_SPTFTVI4188AC0IKIA9Q6K0QS0_WCM_CONTEXT=/wps/wcm/connect/NYSL+Content+Library/NYSL+Internet+Site/Home/Daily+Games/QUICK+DRAW/">New York Lottery Quick Draw</a> numbers to resolve bets. Quick Draw numbers are drawn every four minutes, every day of the week (with the exception of 3:25am to 4:00am EST daily). The numbers are published online shortly after they are drawn. The drawing selects `20` numbers randomly from a pool of numbers `1` through `80`, without replacement. A bet seen in the blockchain will be resolved with the next available set of Quick Draw numbers. Since Chancecoin uses the next available set of Quick Draw numbers after a block has been mined to resolve any bets in the block, it is impossible for Bitcoin miners or anyone else to control the outcomes of bets.</p>
     <p>When it sees a bet, Chancecoin uses <a href="http://en.wikipedia.org/wiki/Combinatorial_number_system">combinadics</a> to convert a set of Quick Draw numbers into a standard uniform random variable, and uses it to resolve the bet. The Quick Draw numbers come in as an ordered list of 20 numbers drawn from `1` through `80`. To convert this into a standard uniform random variable, Chancecoin uses:</p>
