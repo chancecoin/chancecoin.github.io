@@ -168,15 +168,17 @@ function importPrivateKey(privateKeyWIF) {
 
 //update the page using the address passed in
 function updateAddress(newAddress) {
-  var addresses = JSON.parse(readCookie("addresses"));
-  var privateKeys = JSON.parse(readCookie("private_keys"));
-  var newPrivateKey = "";
-  if (addresses && privateKeys) {
-    var addressIndex = addresses.indexOf(newAddress);
-    newPrivateKey = addressIndex >= 0 ? privateKeys[addressIndex] : "";
+  if (newAddress) {
+    var addresses = JSON.parse(readCookie("addresses"));
+    var privateKeys = JSON.parse(readCookie("private_keys"));
+    var newPrivateKey = "";
+    if (addresses && privateKeys) {
+      var addressIndex = addresses.indexOf(newAddress);
+      newPrivateKey = addressIndex >= 0 ? privateKeys[addressIndex] : "";
+    }
+    ADDRESS = newAddress;
+    PRIVATE_KEY = newPrivateKey;
   }
-  ADDRESS = newAddress;
-  PRIVATE_KEY = newPrivateKey;
 }
 
 //update the page using the address from URL
@@ -1251,6 +1253,7 @@ function getCasinoInfo() {
   if (address) {
     addressInfos.push({address: address, balanceCHA: getBalance(address, "CHA")});
   }
+
   for (i in addresses) {
     addressInfos.push({address: addresses[i], balanceCHA: getBalance(addresses[i], "CHA")});
   }
