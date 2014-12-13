@@ -1047,6 +1047,7 @@ function showError(message) {
 function showMessage(message, type) {
   $("#ajax_info").hide();
   $("#ajax_error").hide();
+  console.log(message);
   if (!type || (type && type == "info")) {
     $("#ajax_info_content").html(message);
     $("#ajax_info").show();
